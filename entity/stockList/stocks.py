@@ -1,4 +1,3 @@
-# 1. 创建单表
 from sqlalchemy import Column, Integer, String
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -7,13 +6,16 @@ from sqlalchemy.orm import sessionmaker
 from config.config import dbConnInfo
 
 # 连接驱动
-ENGINE = create_engine(dbConnInfo)
-# 数据库对话对象
-DBSession = sessionmaker(bind=ENGINE)
-# 数据库对话
-session = DBSession()
+ENGINE = create_engine(dbConnInfo())
+
 # Base是declarative_base的实例化对象
 Base = declarative_base()
+
+# 数据库对话对象
+DBSession = sessionmaker(bind=ENGINE)
+
+# 数据库对话
+session = DBSession()
 
 
 # 每个类都要继承Base
@@ -28,7 +30,6 @@ class Stocks(Base):
     codeStr = Column(String(32), index=True)
     name = Column(String(32), nullable=True)
     market = Column(String(32), unique=False, nullable=True)
-    # market_type = Column(Integer, default=datetime.datetime.now)
     market_type = Column(Integer, default=0, nullable=False)
 
     # 相当于Django的ORM的class Meta，是一些元信息
@@ -48,7 +49,7 @@ def drop_db():
 
 
 # 所有数据一并提交
-def insertPatch(dataList: list):
+def batchInsert(dataList: list):
     for data in dataList:
         session.add(data)
     session.commit()

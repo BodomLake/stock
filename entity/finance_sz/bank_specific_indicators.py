@@ -59,10 +59,10 @@ def insertBatch(dataList: list):
     session.commit()
 
 
-if __name__ == '__main__':
-    create_db()
-
-
 def insert(data):
     session.add(data)
     session.commit()
+
+
+if __name__ == '__main__':
+    create_db()

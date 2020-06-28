@@ -5,8 +5,7 @@ from bs4 import BeautifulSoup
 from utils import utils
 
 # 东方财富网股吧地址
-from entity.stockList import curd
-from entity.stockList.Stocks import Stocks
+from entity.stockList import stocks
 
 URL_base = 'http://guba.eastmoney.com/'
 URL_append = 'remenba.aspx?type=1&tab=1'
@@ -48,14 +47,16 @@ for a0 in a0s:
 
 # 获取所有的板块下的所有股票的代码和名称，写入数据库
 # 获取HTML，并且分析出BeautifulSoup对象
-stocks = getStockList(url=URL)
-marketType = 0
+stocksInfo = getStockList(url=URL)
+marketType: int = 0
 # market是股票板块名称，url是股票板块的网站链接
 for market, url in dictOfStock.items():
-    stocks = getStockList(URL_base+url)
+    print('Processing URL :', URL_base + url)
+    print("Processing Market :", market)
+    stocksInfo = getStockList(URL_base + url)
     dataList = []
-    for stock in stocks:
-        text = stock.string
+    for stockInfo in stocksInfo:
+        text = stockInfo.string
         # 从字符串提取 股票的代码
         stockCode = utils.extractStockCode(text)
         # 从字符串提取 股票的名称
@@ -70,19 +71,14 @@ for market, url in dictOfStock.items():
         else:
             code = int(stockCode.lstrip('0'))
         # 创建股票的对象
-        data = Stocks(id=stockId,
-                      code=code,
-                      codeStr=stockCode,
-                      name=stockName,
-                      market=market,
-                      market_type=marketType)
+        data = stocks.Stocks(id=stockId, code=code, codeStr=stockCode,
+                             name=stockName, market=market, market_type=marketType)
         # 堆入列表中
         dataList.append(data)
 
     # 批量写入
-    curd.insertBatch(dataList)
+    stocks.batchInsert(dataList)
     # 板块的种类序号
-    marketType = marketType + 1
-    print("程序沉睡2秒")
-    time.sleep(2)
-    print("程序再次执行")
+    marketType += 1
+    print(market, 'has been processed')
+    time.sleep(1)

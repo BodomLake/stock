@@ -8,7 +8,7 @@ from entity.finance.main_indicators import MainIndicators
 from entity.finance.balance_sheets import BalanceSheets
 from entity.finance.profit_statement import ProfitStatement
 from entity.finance.cash_flow_statement import CashFlowStatement
-from entity.stockList import Stocks
+from entity.stockList import stocks
 
 
 def launchChrome():

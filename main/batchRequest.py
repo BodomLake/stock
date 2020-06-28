@@ -9,7 +9,7 @@ from entity.finance_sh.balance_sheets import BalanceSheets
 from entity.finance_sh.profit_statement import ProfitStatement
 from entity.finance_sh.cash_flow_statement import CashFlowStatement
 from entity.finance_sh.bank_specific_indicators import BankSpecificIndicators
-from entity.stockList import Stocks
+from entity.stockList import stocks
 
 
 def launchChrome():
@@ -134,7 +134,7 @@ broswer = launchChrome()
 domain = 'http://stockpage.10jqka.com.cn/'
 # 这次要处理的股票的所有代码 起步位置 股票数量 板块类型
 # 500了
-stockList = Stocks.selectBunchOfCode(startNo=0, size=1552, market_type=0)
+stockList = stocks.selectBunchOfCode(startNo=0, size=1552, market_type=0)
 # 批量处理
 for stock in stockList:
     stockCode_Str = stock

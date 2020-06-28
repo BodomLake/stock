@@ -10,7 +10,6 @@ from config.config import dbConnInfo
 
 ENGINE = create_engine(dbConnInfo(schema='sz_finance'))
 
-
 # Base是declarative_base的实例化对象
 Base = declarative_base()
 
@@ -60,10 +59,10 @@ def insertBatch(dataList: list):
     session.commit()
 
 
-if __name__ == '__main__':
-    create_db()
-
-
 def insert(data):
     session.add(data)
     session.commit()
+
+
+if __name__ == '__main__':
+    create_db()

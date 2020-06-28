@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from config.config import dbConnInfo
-from entity.stockList.Stocks import Stocks
+from entity.stockList.stocks import Stocks
 
 ENGINE = create_engine(dbConnInfo)
 DBSession = sessionmaker(bind=ENGINE)
