@@ -134,6 +134,7 @@ def processStock(broswer):
 
 # 启动浏览器
 print('\n', 'ready to launch the browser!')
+logging.warning(msg='starting')
 browser = launchChrome()
 domain = 'http://stockpage.10jqka.com.cn/'
 # 这次要处理的股票的所有代码 起步位置 股票数量 板块类型
@@ -154,5 +155,7 @@ except Exception as ex:
     logging.warning(msg=stockCode_Str)
 
 print('\n', 'ready to close the browser!')
+logging.warning(msg='starting')
+print('all is over:', time.asctime())
 browser.close()
 browser.quit()

@@ -1,4 +1,6 @@
 import logging
+import time
+
 from logging import handlers
 
 
@@ -12,3 +14,6 @@ class Logger(object):
         'crit': logging.CRITICAL
     }
 
+
+if __name__ == '__main__':
+    print('all is over:', time.asctime())
