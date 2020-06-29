@@ -1,7 +1,9 @@
+import logging
 import time
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from config.config import *
 
 # 深证股票
 from entity.finance_sz import main_indicators, balance_sheets, profit_statement, cash_flow_statement, \
@@ -12,12 +14,11 @@ from entity.finance_sz.cash_flow_statement import CashFlowStatement
 from entity.finance_sz.main_indicators import MainIndicators
 from entity.finance_sz.profit_statement import ProfitStatement
 
-
-# 上证股票
+logging.basicConfig(filename='D:\PycharmProjects\stock\log\sz.log', filemode='a', level=logging.WARNING,
+                    format='%(asctime)s - %(pathname)s - %(levelname)s: %(message)s')
 
 
 def launchChrome():
-    chrome_driver = r'D:\Python37\Lib\site-packages\selenium\webdriver\chrome\chromedriver83.0.4103.exe'
     # 获取chrome浏览器的所有可选项
     options = webdriver.ChromeOptions()
     # 设置window.navigator.webdriver为false
@@ -27,14 +28,12 @@ def launchChrome():
     # 禁止加载图片
     options.add_argument('blink-settings=imagesEnabled=false')
     # 浏览器不提供可视化页面
-    # options.add_argument('--headless')
+    options.add_argument('--headless')
     # 伪装为手机请求头
-    options.add_argument(
-        '--user-agent=Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) ' +
-        'AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3')
+    options.add_argument(phoneHead)
 
     # google浏览器
-    explorer = webdriver.Chrome(executable_path=chrome_driver, options=options)
+    explorer = webdriver.Chrome(executable_path=driverpath, options=options)
     return explorer
 
 
@@ -77,7 +76,6 @@ def processStock(broswer):
     # 切换iframe 以保证准确定位
     broswer.switch_to.frame('dataifm')
     # 获取财务报表所有的表的类型
-    # sideNav = broswer.find_elements_by_xpath('//*[@id="cwzbDemo"]/div[2]/ul/li')
     sideNav = broswer.find_elements_by_xpath('//*[@class="newTab"]/li')
 
     for report_type in range(0, len(sideNav)):
@@ -126,7 +124,7 @@ def processStock(broswer):
                     refreshFlag = indicatorsNum != len(nextIndicatorSum)
                 # broswer.switch_to.frame('dataifm')
         except Exception as ex:
-            print('出现问题了:',ex)
+            print('出现问题了:', ex)
         finally:
             print(sheet_href.text, '输出完毕')
 
@@ -141,15 +139,20 @@ domain = 'http://stockpage.10jqka.com.cn/'
 # 这次要处理的股票的所有代码 起步位置 股票数量 板块类型
 stockCode_Str = '300725'
 subject: str = '/finance'
+
 try:
     stockCode = int(stockCode_Str)
 except Exception as ex:
     print(ex)
-finally:
-    url = 'http://stockpage.10jqka.com.cn/' + stockCode_Str + subject
+
+url = 'http://stockpage.10jqka.com.cn/' + stockCode_Str + subject
+
+try:
     browser.get(url=url)
-    # 处理数据
     processStock(browser)
+except Exception as ex:
+    logging.warning(msg=stockCode_Str)
+
 print('\n', 'ready to close the browser!')
 browser.close()
 browser.quit()

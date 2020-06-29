@@ -2,8 +2,12 @@ import time
 
 from selenium import webdriver
 from bs4 import BeautifulSoup
+from config.config import *
+import logging
+
+# 上海股票
 from entity.finance_sh \
-    import main_indicators, balance_sheets, profit_statement, cash_flow_statement,bank_specific_indicators
+    import main_indicators, balance_sheets, profit_statement, cash_flow_statement, bank_specific_indicators
 from entity.finance_sh.main_indicators import MainIndicators
 from entity.finance_sh.balance_sheets import BalanceSheets
 from entity.finance_sh.profit_statement import ProfitStatement
@@ -11,9 +15,11 @@ from entity.finance_sh.cash_flow_statement import CashFlowStatement
 from entity.finance_sh.bank_specific_indicators import BankSpecificIndicators
 from entity.stockList import stocks
 
+logging.basicConfig(filename='D:\PycharmProjects\stock\log\sh.log', filemode='a', level=logging.WARNING,
+                    format='%(asctime)s - %(pathname)s - %(levelname)s: %(message)s')
+
 
 def launchChrome():
-    chrome_driver = r'C:\Python38\Lib\site-packages\selenium\webdriver\chrome\chromedriver.exe'
     # 获取chrome浏览器的所有可选项
     options = webdriver.ChromeOptions()
     # 设置window.navigator.webdriver为false
@@ -25,12 +31,10 @@ def launchChrome():
     # 浏览器不提供可视化页面
     options.add_argument('--headless')
     # 伪装为手机请求头
-    options.add_argument(
-        'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) '
-        'Chrome/74.0.3729.157 Mobile Safari/537.36')
+    options.add_argument(phoneHead)
 
     # google浏览器
-    explorer = webdriver.Chrome(executable_path=chrome_driver, options=options)
+    explorer = webdriver.Chrome(executable_path=driverpath, options=options)
     return explorer
 
 
@@ -73,7 +77,7 @@ def processStock(broswer):
     # 切换iframe 以保证准确定位
     broswer.switch_to.frame('dataifm')
     # 获取财务报表所有的表的类型
-    sideNav = broswer.find_elements_by_xpath('//*[@id="cwzbDemo"]/div[2]/ul/li')
+    sideNav = broswer.find_elements_by_xpath('//*[@class="newTab"]/li')
 
     for report_type in range(0, len(sideNav)):
         # 当前报表名称
@@ -134,7 +138,7 @@ broswer = launchChrome()
 domain = 'http://stockpage.10jqka.com.cn/'
 # 这次要处理的股票的所有代码 起步位置 股票数量 板块类型
 # 500了
-stockList = stocks.selectBunchOfCode(startNo=0, size=1552, market_type=0)
+stockList = stocks.selectBunchOfCode(startNo=0, size=1574, market_type=0)
 # 批量处理
 for stock in stockList:
     stockCode_Str = stock
@@ -143,11 +147,16 @@ for stock in stockList:
         stockCode = int(stockCode_Str)
     except Exception as ex:
         print(ex)
-    finally:
-        url = 'http://stockpage.10jqka.com.cn/' + stockCode_Str + subject
+
+    url = 'http://stockpage.10jqka.com.cn/' + stockCode_Str + subject
+
+    try:
         broswer.get(url=url)
         # 处理数据
         processStock(broswer)
+    except Exception as ex:
+        logging.warning(msg=stockCode_Str)
+
 print('\n', 'ready to close the browser!')
 broswer.close()
 broswer.quit()
