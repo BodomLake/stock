@@ -155,7 +155,7 @@ except Exception as ex:
     logging.warning(msg=stockCode_Str)
 
 print('\n', 'ready to close the browser!')
-logging.warning(msg='starting')
+logging.warning(msg='ending')
 print('all is over:', time.asctime())
 browser.close()
 browser.quit()
